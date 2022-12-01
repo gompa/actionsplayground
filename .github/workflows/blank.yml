@@ -40,3 +40,9 @@ jobs:
           cp $GITHUB_WORKSPACE/config6.1 .config
           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
           pwd
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Gkernel build
+          path: $GITHUB_WORKSPACE/*.deb
+
