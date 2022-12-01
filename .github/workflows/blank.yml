@@ -38,7 +38,9 @@ jobs:
           mkdir linux 
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
-          touch ../linux-image-stub.deb
+          echo "test al the stuff" > ../linux-image-stub.deb
+          echo "test al the stuff1" > ../linux-image-stub1.deb
+          echo "test al the stuff2" > ../linux-image-stub2.deb
 
 
       - name: Release
