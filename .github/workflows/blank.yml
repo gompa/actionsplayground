@@ -28,6 +28,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: clone kernel
         run: |
+          cd $GITHUB_WORKSPACE,
           git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git,
           cd linux && patch -p1 <../more-uarches-for-kernel-5.17+.patch 
 
