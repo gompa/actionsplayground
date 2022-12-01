@@ -30,6 +30,8 @@ jobs:
         run: |
           git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
           cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
+          sudo apt install flex bison build-essentials zstd
+          sudo apt-get build-dep linux linux-image-$(uname -r)
 
       # Runs a set of commands using the runners shell
       - name: set config and build
