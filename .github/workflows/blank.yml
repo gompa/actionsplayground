@@ -35,6 +35,6 @@ jobs:
       - name: set config and build
         run: |
           ls
-          cp $GITHUB_WORKSPACE .config
+          cp $GITHUB_WORKSPACE/config6.1 .config
           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
           pwd
