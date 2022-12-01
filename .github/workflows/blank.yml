@@ -34,7 +34,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: set config and build
         run: |
-          ls
+          cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
           pwd
