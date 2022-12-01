@@ -42,6 +42,7 @@ jobs:
 
       - name: set config and dummy build
         run: |
+          mkdir linux 
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
           touch ../linux-image-stub.deb
