@@ -19,28 +19,28 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a single command using the runners shell
-#       - name: clone kernel
-#         run: |
-#           git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-#           cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
-#           sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
+      - name: clone kernel
+        run: |
+          git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+          cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
+          sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
           
 
       # Runs a set of commands using the runners shell
-#       - name: set config and build
-#         run: |
-#           cd linux 
-#           cp $GITHUB_WORKSPACE/config6.1 .config
-#           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
-
-      - name: set config and dummy build
+      - name: set config and build
         run: |
-          mkdir linux 
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
-          echo "test al the stuff" > ../linux-image-stub.deb
-          echo "test al the stuff1" > ../linux-image-stub1.deb
-          echo "test al the stuff2" > ../linux-image-stub2.deb
+          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
+
+#       - name: set config and dummy build
+#         run: |
+#           mkdir linux 
+#           cd linux 
+#           cp $GITHUB_WORKSPACE/config6.1 .config
+#           echo "test al the stuff" > ../linux-image-stub.deb
+#           echo "test al the stuff1" > ../linux-image-stub1.deb
+#           echo "test al the stuff2" > ../linux-image-stub2.deb
 
 
       - name: Release
