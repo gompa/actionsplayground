@@ -34,15 +34,21 @@ jobs:
           
 
       # Runs a set of commands using the runners shell
-      - name: set config and build
+#       - name: set config and build
+#         run: |
+#           cd linux 
+#           cp $GITHUB_WORKSPACE/config6.1 .config
+#           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
+
+      - name: set config and dummy build
         run: |
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
-          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
-          pwd
+          touch ../linux-image-stub.deb
+
 
       - uses: actions/upload-artifact@v3
         with:
           name: Gkernel build
-          path: $GITHUB_WORKSPACE/*.deb
+          path: /home/runner/work/Gkernel/Gkernel/*.deb
 
