@@ -53,6 +53,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: /home/runner/work/Gkernel/Gkernel/*.deb
+
         #publish repo
       - name: publish repo
         uses: gompa/apt-repo-action@v2.2.15
@@ -69,6 +70,10 @@ jobs:
           public_key: ${{ secrets.PUBLIC }}
           private_key: ${{ secrets.PRIVATE }}
           key_passphrase: ${{ secrets.SECRET }}
+        run : |
+              ls 
+              pwd
+              
 #       - uses: actions/upload-artifact@v3
 #         with:
 #           name: Gkernel build
