@@ -60,7 +60,7 @@ jobs:
           repo_supported_version: |
             jammy
             kinetic
-          file: /home/runner/work/Gkernel/Gkernel/*.deb
+          INPUT_FILE: /home/runner/work/Gkernel/Gkernel/*.deb
           file_target_version: jammy
           public_key: ${{ secrets.PUBLIC }}
           private_key: ${{ secrets.PRIVATE }}
