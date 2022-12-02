@@ -53,7 +53,7 @@ jobs:
           files: /home/runner/work/Gkernel/Gkernel/*.deb
         #publish repo
       - name: publish repo
-        uses: gompa/apt-repo-action@v2.2.9
+        uses: gompa/apt-repo-action@v2.2.10
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           repo_supported_arch: |
