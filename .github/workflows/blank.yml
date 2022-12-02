@@ -18,16 +18,16 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: clone kernel
-        run: |
-          git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-          cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
-          sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
-      #build toucpad fixes deb
-      - name: build touchpad fix deb
-        run: |           
-          dpkg-deb --build --root-owner-group chromebooktouchpad
+#       # Runs a single command using the runners shell
+#       - name: clone kernel
+#         run: |
+#           git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+#           cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
+#           sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
+#       #build toucpad fixes deb
+#       - name: build touchpad fix deb
+#         run: |           
+#           dpkg-deb --build --root-owner-group chromebooktouchpad
           
       # Runs a set of commands using the runners shell
 #       - name: set config and build
@@ -38,6 +38,7 @@ jobs:
 
       - name: set config and dummy build
         run: |
+          mkdir linux
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
           echo "test al the stuff" > ../linux-image-stub.deb
