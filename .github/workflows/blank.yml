@@ -52,7 +52,7 @@ jobs:
           files: /home/runner/work/Gkernel/Gkernel/*.deb
         #publish repo
       - name: publish repo
-        uses: jrandiny/apt-repo-action@v2.0.1
+        uses: gompa/apt-repo-action@v0.1
         with:
           github_token: ${{ secrets.PAT }}
           repo_supported_arch: |
