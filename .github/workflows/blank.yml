@@ -30,19 +30,19 @@ jobs:
           dpkg-deb --build --root-owner-group chromebooktouchpad
           
       # Runs a set of commands using the runners shell
-      - name: set config and build
-        run: |
-          cd linux 
-          cp $GITHUB_WORKSPACE/config6.1 .config
-          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
-
-#       - name: set config and dummy build
+#       - name: set config and build
 #         run: |
 #           cd linux 
 #           cp $GITHUB_WORKSPACE/config6.1 .config
-#           echo "test al the stuff" > ../linux-image-stub.deb
-#           echo "test al the stuff1" > ../linux-image-stub1.deb
-#           echo "test al the stuff2" > ../linux-image-stub2.deb
+#           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
+
+      - name: set config and dummy build
+        run: |
+          cd linux 
+          cp $GITHUB_WORKSPACE/config6.1 .config
+          echo "test al the stuff" > ../linux-image-stub.deb
+          echo "test al the stuff1" > ../linux-image-stub1.deb
+          echo "test al the stuff2" > ../linux-image-stub2.deb
 
 
       - name: Release
@@ -50,7 +50,23 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: /home/runner/work/Gkernel/Gkernel/*.deb
-
+        #publish repo
+      - name: publish repo
+        uses: jrandiny/apt-repo-action@v1
+        with:
+          github_token: ${{ secrets.PAT }}
+          arch: |
+            amd64
+          version: |
+            jammy
+            kinetic
+          file: /home/runner/work/Gkernel/Gkernel/*.deb
+          file_target_version: |
+                          jammy
+                          kinetic
+          public_key: ${{ secrets.PUBLIC }}
+          private_key: ${{ secrets.PRIVATE }}
+          key_passphrase: ${{ secrets.SECRET }}
 #       - uses: actions/upload-artifact@v3
 #         with:
 #           name: Gkernel build
