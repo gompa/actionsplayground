@@ -18,32 +18,32 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: clone kernel
-        run: |
-          git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-          cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
-          sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
-      #build toucpad fixes deb
-      - name: build touchpad fix deb
-        run: |           
-          dpkg-deb --build --root-owner-group chromebooktouchpad
-          
-      # Runs a set of commands using the runners shell
-      - name: set config and build
-        run: |
-          cd linux 
-          cp $GITHUB_WORKSPACE/config6.1 .config
-          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
-
-#       - name: set config and dummy build
+#       # Runs a single command using the runners shell
+#       - name: clone kernel
 #         run: |
-#           mkdir linux
+#           git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+#           cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
+#           sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
+#       #build toucpad fixes deb
+#       - name: build touchpad fix deb
+#         run: |           
+#           dpkg-deb --build --root-owner-group chromebooktouchpad
+          
+#       # Runs a set of commands using the runners shell
+#       - name: set config and build
+#         run: |
 #           cd linux 
 #           cp $GITHUB_WORKSPACE/config6.1 .config
-#           echo "test al the stuff" > ../linux-image-stub.deb
-#           echo "test al the stuff1" > ../linux-image-stub1.deb
-#           echo "test al the stuff2" > ../linux-image-stub2.deb
+#           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
+
+      - name: set config and dummy build
+        run: |
+          mkdir linux
+          wget https://github.com/gompa/Gkernel/releases/download/longtestislong/chromebooktouchpad.deb
+          wget https://github.com/gompa/Gkernel/releases/download/longtestislong/linux-headers-6.1.0-rc7atom_6.1.0-rc7atom-1_amd64.deb
+          wget https://github.com/gompa/Gkernel/releases/download/longtestislong/linux-image-6.1.0-rc7atom_6.1.0-rc7atom-1_amd64.deb
+          wget https://github.com/gompa/Gkernel/releases/download/longtestislong/linux-libc-dev_6.1.0-rc7atom-1_amd64.deb
+          cd linux 
 
 
       - name: Release
