@@ -56,7 +56,7 @@ jobs:
 
         #publish repo
       - name: publish repo
-        uses: gompa/apt-repo-action@v2.2.20
+        uses: smeinecke/apt-repo-action@v2.1.1
         with:
           debug: True
           github_token: ${{ secrets.GHUB_TOKEN }}
