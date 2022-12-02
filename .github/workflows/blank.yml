@@ -57,7 +57,7 @@ jobs:
       - name: publish repo
         uses: gompa/apt-repo-action@v2.2.15
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GHUB_TOKEN }}
           repo_supported_arch: |
             amd64
           repo_supported_version: |
