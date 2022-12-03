@@ -56,7 +56,7 @@ jobs:
 
         #publish repo
       - name: publish repo
-        uses: gompa/apt-repo-action@v2.3.5
+        uses: gompa/apt-repo-action@v2.3.6
         with:
           debug: True
           github_token: ${{ secrets.GHUB_TOKEN }}
