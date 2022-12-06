@@ -76,8 +76,8 @@ jobs:
 #               ls 
 #               pwd
               
-#       - uses: actions/upload-artifact@v3
-#         with:
-#           name: Gkernel build
-#           path: /home/runner/work/Gkernel/Gkernel/*.deb
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Gkernel build
+          path: /home/runner/work/Gkernel/Gkernel/*.deb
 
