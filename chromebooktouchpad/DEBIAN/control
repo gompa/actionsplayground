@@ -1,6 +1,0 @@
-Package: acer-chromebook-fixes
-Version: 0.1
-Architecture: amd64
-Maintainer: Gompa <gompa@h-bomb.nl>
-Description: A package to config chromebook touchpad.
- and more
