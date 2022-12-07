@@ -34,10 +34,13 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: set config and build
         run: |
+          python3 ./kversion.py
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
-          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom 
-
+          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom
+          cp debian/linux-image/DEBIAN/control ../image-control
+          cp debian/linux-headers/DEBIAN/control ../header-control
+          cp debian/linux-libc-dev/DEBIAN/control ../header-control
 #       - name: set config and dummy build
 #         run: |
 #           mkdir linux
@@ -45,7 +48,13 @@ jobs:
 #           wget https://github.com/gompa/Gkernel/releases/download/longtestislong/linux-image-6.1.0-rc7atom_6.1.0-rc7atom-1_amd64.deb
 #           wget https://github.com/gompa/Gkernel/releases/download/longtestislong/linux-libc-dev_6.1.0-rc7atom-1_amd64.deb
 #           cd linux 
-
+      - name: add control files to grepo
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add *-control
+          git commit -m "update control versions"
+          git push
 
       - name: Release
         uses: softprops/action-gh-release@v1
