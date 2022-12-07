@@ -36,6 +36,9 @@ jobs:
         run: |
           pwd
           ls
+          ls linux/
+          ls linux/debian/
+          ls debian/linux-image/
           python3 ./kversion.py
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
