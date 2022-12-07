@@ -1,7 +1,7 @@
 import os 
 import shutil
 
-githubworkspace=os.getenv('$GITHUB_WORKSPACE')
+githubworkspace=os.getenv('GITHUB_WORKSPACE')
 print(githubworkspace)
 
 image_sourcefiles= ["./linux/debian/linux-image/DEBIAN/control", "./linux-image-control"]
