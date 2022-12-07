@@ -5,11 +5,11 @@ import sys
 githubworkspace=os.getenv('GITHUB_WORKSPACE')
 print(githubworkspace)
 repoversionfile="version"
-# sourcedebversionfile="{githubworkspace}/linux/.version".format(githubworkspace=githubworkspace)
-# kernelrevisionfile="{githubworkspace}/linux/Makefile".format(githubworkspace=githubworkspace)
+sourcedebversionfile="{githubworkspace}/linux/.version".format(githubworkspace=githubworkspace)
+kernelrevisionfile="{githubworkspace}/linux/Makefile".format(githubworkspace=githubworkspace)
 
-sourcedebversionfile="../mainline-kernel/.version"
-kernelrevisionfile="../mainline-kernel/Makefile"
+# sourcedebversionfile="../mainline-kernel/.version"
+# kernelrevisionfile="../mainline-kernel/Makefile"
 
 
 # copy function for after build to sync repo and source versions
