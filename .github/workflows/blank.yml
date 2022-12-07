@@ -34,18 +34,11 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: set config and build
         run: |
-          pwd
-          ls
-          ls linux/
-          ls linux/debian/
-          ls debian/linux-image/
-          python3 ./kversion.py
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1 .config
+          make olddefconfig
           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom
-          cp debian/linux-image/DEBIAN/control ../image-control
-          cp debian/linux-headers/DEBIAN/control ../header-control
-          cp debian/linux-libc-dev/DEBIAN/control ../header-control
+          cp -r debian ../debian
 #       - name: set config and dummy build
 #         run: |
 #           mkdir linux
@@ -57,7 +50,7 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add *-control
+          git add debian
           git commit -m "update control versions"
           git push
 
