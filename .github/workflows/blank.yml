@@ -39,7 +39,7 @@ jobs:
           cp $GITHUB_WORKSPACE/config6.1 .config
           make olddefconfig
           time make -j$(nproc) bindeb-pkg LOCALVERSION=atom
-          python3 kversion.py cp
+          python3 ../kversion.py cp
 #       - name: set config and dummy build
 #         run: |
 #           mkdir linux
