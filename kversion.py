@@ -4,46 +4,28 @@ import shutil
 githubworkspace=os.getenv('GITHUB_WORKSPACE')
 print(githubworkspace)
 
-image_sourcefiles= ["{}/linux/debian/linux-image/DEBIAN/control".format(githubworkspace), "{}/linux-image-control".format(githubworkspace)]
-headers_sourcefiles=["{}/linux/debian/linux-headers/DEBIAN/control".format(githubworkspace),"{}/linux-headers-control".format(githubworkspace)]
-libc_sourcefiles=["{}/linux/debian/linux-libc-dev/DEBIAN/control".format(githubworkspace),"{}/linux-libc-dev-control".format(githubworkspace)]
-
-
-def copyallconfig():
-	shutil.copyfile(image_sourcefiles[0], image_sourcefiles[1])
-	shutil.copyfile(headers_sourcefiles[0], headers_sourcefiles[1])
-	shutil.copyfile(libc_sourcefiles[0], libc_sourcefiles[1])
-
-
-optionsindex=0
-with open(image_sourcefiles[0], encoding = 'utf-8') as f:
+repoversionfile="version"
+sourcedebversionfile="{githubworkspace}/linux/.version".format(githubworkspace=githubworkspace)
+kernelrevisionfile="{githubworkspace}/linux/Makefile".format(githubworkspace=githubworkspace)
+with open(repoversionfile) as f:
 	values=f.readlines()
-	for item in values:
-		if "Version:" in item:
-			sourceversion=item.split(":")[-1].split('-')[0]
-			sourcebuildversion=item.split(":")[-1].split('-')[-1]
+	repobuildversion=values[0].strip('\n')
+	repokernelrevision=values[1].strip('\n')
 
-if os.path.exists(image_sourcefiles[1]) and os.path.exists(headers_sourcefiles[1]) and os.path.exists(libc_sourcefiles[1]):
-	#check version of kernel image if they dont match rest should be renewed too
-	with open(image_sourcefiles[1], encoding = 'utf-8') as f:
-		values=f.readlines()     
-		for item in values:
-			if "Version:" in item:
-				ourversion=item.split(":")[-1].split('-')[0]
-				ourbuildversion=item.split(":")[-1].split('-')[-1]
+with open(kernelrevisionfile) as krevfile:
+	config={}
+	while len(config) < 6:
 
-	if ourversion == sourceversion :
+		line=krevfile.readline().strip('\n')
+		if "=" in line:
+			key=line.split('=')[0].replace(' ','')
+			value=line.split('=')[1].replace(' ','')
+			config[key]=value
 		
-		if sourcebuildversion != ourbuildversion:
-			print('good to copy')
-		else:
-			print('files build versions are the same')
-		
-	else:
-		print("different main versions creating new control file in repo")
-		copyallconfig()
+kernelversionfromsource='{}.{}.{}{}'.format(config['VERSION'],config["PATCHLEVEL"],config['SUBLEVEL'],config["EXTRAVERSION"])
+if repokernelrevision == kernelversionfromsource:
+	with open(sourcedebversionfile,'w') as kversion:
+		kversion.write(repobuildversion)
+	print("SAME, copying debversion")
 else:
-	print("no control files found creating new control files in repo")
-	copyallconfig()
-
-	
+	print('new kernel no version file needed')

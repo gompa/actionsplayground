@@ -1,5 +1,0 @@
-linux-upstream (6.1.0-rc8atom-10) jammy; urgency=low
-
-  * Custom built Linux kernel.
-
- -- gompa <gompa@flaptop>  Mon, 05 Dec 2022 16:54:48 +0100
