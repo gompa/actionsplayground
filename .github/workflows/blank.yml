@@ -50,6 +50,7 @@ jobs:
 #           cd linux 
       - name: add control files to grepo
         run: |
+          git fetch
           git checkout main
           git config user.name github-actions
           git config user.email github-actions@github.com
