@@ -17,5 +17,5 @@ echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/grepo-archive-keyring.gpg ] 
 ```
 # 3. Update your package database and install the gkernel
 ```
-sudo apt update && sudo apt install linux-image-6.1.0-rc8atom linux-headers-6.1.0-rc8atom linux-libc-dev
+sudo apt update && sudo apt install  acer-chromebook-fixes linux-image-6.1.0-rc8atom linux-headers-6.1.0-rc8atom linux-libc-dev
 ```
