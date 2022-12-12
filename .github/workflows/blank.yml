@@ -24,7 +24,7 @@ jobs:
       - name: clone kernel
         run: |
           git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-          cd linux && patch -p1 <$GITHUB_WORKSPACE/more-uarches-for-kernel-5.17+.patch 
+          cd linux && for i in $GITHUB_WORKSPACE/patch/*.patch; do patch -p1 < $i; done  
           sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
       #build toucpad fixes deb
       - name: build touchpad fix deb
