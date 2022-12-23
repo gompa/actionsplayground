@@ -23,7 +23,7 @@ jobs:
       # Runs a single command using the runners shell
       - name: clone kernel
         run: |
-          git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+          git clone --branch linux-6.1.y --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
           cd linux && for i in $GITHUB_WORKSPACE/patch/*.patch; do patch -p1 < $i; done  
           sudo apt install flex bison build-essential zstd gcc bc libssl-dev libncurses5-dev libelf-dev
       #build toucpad fixes deb
