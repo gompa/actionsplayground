@@ -1,0 +1,34 @@
+---
+ init/init_task.c    | 1 +
+ kernel/sched/core.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/init/init_task.c b/init/init_task.c
+index ff6c4b9bfe6b..7dd71dd2d261 100644
+--- a/init/init_task.c
++++ b/init/init_task.c
+@@ -78,6 +78,7 @@ struct task_struct init_task
+ 	.prio		= MAX_PRIO - 20,
+ 	.static_prio	= MAX_PRIO - 20,
+ 	.normal_prio	= MAX_PRIO - 20,
++	.latency_nice	= DEFAULT_LATENCY_NICE,
+ 	.policy		= SCHED_NORMAL,
+ 	.cpus_ptr	= &init_task.cpus_mask,
+ 	.user_cpus_ptr	= NULL,
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 02dc1b8e3cb6..54544353025b 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4559,6 +4559,7 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+ 		p->prio = p->normal_prio = p->static_prio;
+ 		set_load_weight(p, false);
+ 
++		p->latency_nice = DEFAULT_LATENCY_NICE;
+ 		/*
+ 		 * We don't need the reset flag anymore after the fork. It has
+ 		 * fulfilled its duty:
+-- 
+2.17.1
+
+  
+

@@ -1,0 +1,190 @@
+---
+ Documentation/admin-guide/cgroup-v2.rst | 10 +++++
+ kernel/sched/core.c                     | 52 +++++++++++++++++++++++++
+ kernel/sched/fair.c                     | 33 ++++++++++++++++
+ kernel/sched/sched.h                    |  4 ++
+ 4 files changed, 99 insertions(+)
+
+diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+index be4a77baf784..a4866cd4e58c 100644
+--- a/Documentation/admin-guide/cgroup-v2.rst
++++ b/Documentation/admin-guide/cgroup-v2.rst
+@@ -1095,6 +1095,16 @@ All time durations are in microseconds.
+         values similar to the sched_setattr(2). This maximum utilization
+         value is used to clamp the task specific maximum utilization clamp.
+ 
++  cpu.latency.nice
++	A read-write single value file which exists on non-root
++	cgroups.  The default is "0".
++
++	The nice value is in the range [-20, 19].
++
++	This interface file allows reading and setting latency using the
++	same values used by sched_setattr(2). The latency_nice of a group is
++       used to limit the impact of the latency_nice of a task outside the
++       group.
+ 
+ 
+ Memory
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index caf54e54a74f..3f42b1f61a7e 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -10890,6 +10890,47 @@ static int cpu_idle_write_s64(struct cgroup_subsys_state *css,
+ {
+ 	return sched_group_set_idle(css_tg(css), idle);
+ }
++
++static s64 cpu_latency_nice_read_s64(struct cgroup_subsys_state *css,
++				    struct cftype *cft)
++{
++	int prio, delta, last_delta = INT_MAX;
++	s64 weight;
++
++	weight = css_tg(css)->latency_offset * NICE_LATENCY_WEIGHT_MAX;
++	weight = div_s64(weight, get_sched_latency(false));
++
++	/* Find the closest nice value to the current weight */
++	for (prio = 0; prio < ARRAY_SIZE(sched_latency_to_weight); prio++) {
++		delta = abs(sched_latency_to_weight[prio] - weight);
++		if (delta >= last_delta)
++			break;
++		last_delta = delta;
++	}
++
++	return LATENCY_TO_NICE(prio-1);
++}
++
++static int cpu_latency_nice_write_s64(struct cgroup_subsys_state *css,
++				     struct cftype *cft, s64 nice)
++{
++	s64 latency_offset;
++	long weight;
++	int idx;
++
++	if (nice < MIN_LATENCY_NICE || nice > MAX_LATENCY_NICE)
++		return -ERANGE;
++
++	idx = NICE_TO_LATENCY(nice);
++	idx = array_index_nospec(idx, LATENCY_NICE_WIDTH);
++	weight = sched_latency_to_weight[idx];
++
++	latency_offset = weight * get_sched_latency(false);
++	latency_offset = div_s64(latency_offset, NICE_LATENCY_WEIGHT_MAX);
++
++	return sched_group_set_latency(css_tg(css), latency_offset);
++}
++
+ #endif
+ 
+ static struct cftype cpu_legacy_files[] = {
+@@ -10904,6 +10945,11 @@ static struct cftype cpu_legacy_files[] = {
+ 		.read_s64 = cpu_idle_read_s64,
+ 		.write_s64 = cpu_idle_write_s64,
+ 	},
++	{
++		.name = "latency.nice",
++		.read_s64 = cpu_latency_nice_read_s64,
++		.write_s64 = cpu_latency_nice_write_s64,
++	},
+ #endif
+ #ifdef CONFIG_CFS_BANDWIDTH
+ 	{
+@@ -11121,6 +11167,12 @@ static struct cftype cpu_files[] = {
+ 		.read_s64 = cpu_idle_read_s64,
+ 		.write_s64 = cpu_idle_write_s64,
+ 	},
++	{
++		.name = "latency.nice",
++		.flags = CFTYPE_NOT_ON_ROOT,
++		.read_s64 = cpu_latency_nice_read_s64,
++		.write_s64 = cpu_latency_nice_write_s64,
++	},
+ #endif
+ #ifdef CONFIG_CFS_BANDWIDTH
+ 	{
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 4299d5108dc7..9583936ce30c 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -11764,6 +11764,7 @@ int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
+ 		goto err;
+ 
+ 	tg->shares = NICE_0_LOAD;
++	tg->latency_offset = 0;
+ 
+ 	init_cfs_bandwidth(tg_cfs_bandwidth(tg));
+ 
+@@ -11862,6 +11863,9 @@ void init_tg_cfs_entry(struct task_group *tg, struct cfs_rq *cfs_rq,
+ 	}
+ 
+ 	se->my_q = cfs_rq;
++
++	se->latency_offset = tg->latency_offset;
++
+ 	/* guarantee group entities always have weight */
+ 	update_load_set(&se->load, NICE_0_LOAD);
+ 	se->parent = parent;
+@@ -11992,6 +11996,35 @@ int sched_group_set_idle(struct task_group *tg, long idle)
+ 	return 0;
+ }
+ 
++int sched_group_set_latency(struct task_group *tg, s64 latency)
++{
++	int i;
++
++	if (tg == &root_task_group)
++		return -EINVAL;
++
++	if (abs(latency) > sysctl_sched_latency)
++		return -EINVAL;
++
++	mutex_lock(&shares_mutex);
++
++	if (tg->latency_offset == latency) {
++		mutex_unlock(&shares_mutex);
++		return 0;
++	}
++
++	tg->latency_offset = latency;
++
++	for_each_possible_cpu(i) {
++		struct sched_entity *se = tg->se[i];
++
++		WRITE_ONCE(se->latency_offset, latency);
++	}
++
++	mutex_unlock(&shares_mutex);
++	return 0;
++}
++
+ #else /* CONFIG_FAIR_GROUP_SCHED */
+ 
+ void free_fair_sched_group(struct task_group *tg) { }
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 99f10b4dc230..95d4be4f3af6 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -407,6 +407,8 @@ struct task_group {
+ 
+ 	/* A positive value indicates that this is a SCHED_IDLE group. */
+ 	int			idle;
++	/* latency constraint of the group. */
++	int			latency_offset;
+ 
+ #ifdef	CONFIG_SMP
+ 	/*
+@@ -517,6 +519,8 @@ extern int sched_group_set_shares(struct task_group *tg, unsigned long shares);
+ 
+ extern int sched_group_set_idle(struct task_group *tg, long idle);
+ 
++extern int sched_group_set_latency(struct task_group *tg, s64 latency);
++
+ #ifdef CONFIG_SMP
+ extern void set_task_rq_fair(struct sched_entity *se,
+ 			     struct cfs_rq *prev, struct cfs_rq *next);
+-- 
+2.17.1
+
+  
+

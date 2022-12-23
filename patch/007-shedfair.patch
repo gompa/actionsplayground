@@ -1,0 +1,23 @@
+---
+ kernel/sched/fair.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 9583936ce30c..a7372f80b1ea 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -11439,6 +11439,9 @@ bool cfs_prio_less(struct task_struct *a, struct task_struct *b, bool in_fi)
+ 	delta = (s64)(sea->vruntime - seb->vruntime) +
+ 		(s64)(cfs_rqb->min_vruntime_fi - cfs_rqa->min_vruntime_fi);
+ 
++	/* Take into account latency prio */
++	delta -= wakeup_latency_gran(sea, seb);
++
+ 	return delta > 0;
+ }
+ #else
+-- 
+2.17.1
+
+  
+
