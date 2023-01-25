@@ -46,6 +46,7 @@ jobs:
 
 # do some version tracking
       - name: add control files to grepo
+        if : startsWith(matrix.arch,'atom')
         run: |
           git fetch
           git checkout main
@@ -59,10 +60,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: /home/runner/work/Gkernel/Gkernel/*.deb
+          files: $GITHUB_WORKSPACE/*.deb
 
 #upload artifact             
       - uses: actions/upload-artifact@v3
         with:
           name: Gkernel build
-          path: /home/runner/work/Gkernel/Gkernel/*.deb
+          path: $GITHUB_WORKSPACE/*.deb
