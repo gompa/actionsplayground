@@ -9,8 +9,8 @@ on:
 jobs:
   
   # This workflow contains a single job called "build"
-  build:
-    environment: build
+  build-setup:
+    environment: build-setup
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -30,15 +30,27 @@ jobs:
       - name: build touchpad fix deb
         run: |           
           dpkg-deb --build --root-owner-group acer-chromebook-fixes_0.0.1-1_amd64
-          
+  
+
+  build:
+    environment: build
+    needs: build
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [atom, generic] 
+    steps:
+
       # Runs a set of commands using the runners shell
       - name: set config and build
         run: |
           python3 kversion.py
           cd linux 
-          cp $GITHUB_WORKSPACE/config6.1 .config
+          cp $GITHUB_WORKSPACE/config6.1${{ matrix.arch }} .config
           make olddefconfig
-          time make -j$(nproc) bindeb-pkg LOCALVERSION=atom
+          time make -j$(nproc) bindeb-pkg LOCALVERSION=${{ matrix.arch }}
           python3 ../kversion.py cp
           cd ../
 
