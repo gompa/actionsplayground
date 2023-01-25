@@ -60,10 +60,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: $GITHUB_WORKSPACE/../*.deb
+          files: /home/runner/work/actionsplayground/actionsplayground/*.deb
 
 #upload artifact             
       - uses: actions/upload-artifact@v3
         with:
           name: Gkernel build
-          path: $GITHUB_WORKSPACE/../*.deb
+          path: /home/runner/work/actionsplayground/actionsplayground/*.deb
