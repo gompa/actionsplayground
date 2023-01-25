@@ -48,7 +48,7 @@ jobs:
       - name: set config and build
         run: |
           pwd
-          ls
+          ls ../
           python3 kversion.py
           cd linux 
           cp $GITHUB_WORKSPACE/config6.1${{ matrix.arch }} .config
